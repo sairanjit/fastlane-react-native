@@ -4,6 +4,18 @@ before_all do
   Dotenv.overload('.env')
 end
 
+desc "Android: Increase versionCode"
+package = load_json(json_path: "./package.json")
+private_lane :increase_android_version do
+  increment_version_code(gradle_file_path: './android/app/build.gradle')
+  increment_version_name(gradle_file_path: './android/app/build.gradle', version_name: package['version'])
+end
+
+desc "Bump build numbers, and set the version to match the package.json version."
+lane :bump do
+  increase_android_version
+end
+
 platform :android do
   desc "RN Production App"
   lane :distribute do
